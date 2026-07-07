@@ -5,3 +5,89 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum ResearchStatus {
+  PENDING
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model ResearchJob {
+  id          String         @id @default(cuid())
+  linkedinUrl String
+  status      ResearchStatus @default(PENDING)
+  progress    Int            @default(0)
+  error       String?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  result ResearchResult?
+
+  @@map("research_jobs")
+}
+
+model LinkedInProfile {
+  id                String   @id @default(cuid())
+  linkedinUrl       String   @unique
+  profilePhoto      String?
+  bannerImage       String?
+  name              String?
+  headline          String?
+  location          String?
+  company           String?
+  companyUrl        String?
+  industry          String?
+  followers         Int?
+  connections       String?
+  creatorMode       Boolean  @default(false)
+  about             String?
+  experience        Json?
+  education         Json?
+  skills            Json?
+  licenses          Json?
+  certifications    Json?
+  languages         Json?
+  volunteer         Json?
+  organizations     Json?
+  projects          Json?
+  awards            Json?
+  patents           Json?
+  publications      Json?
+  courses           Json?
+  causes            Json?
+  groups            Json?
+  interests         Json?
+  recommendations   Json?
+  featured          Json?
+  posts             Json?
+  completenessScore Int      @default(0)
+  normalizedJson    Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  results ResearchResult[]
+
+  @@map("linkedin_profiles")
+}
+
+model ResearchResult {
+  id             String   @id @default(cuid())
+  jobId          String   @unique
+  profileId      String
+  rawJson        Json?
+  metadata       Json?
+  debugLog       Json?
+  screenshotPath String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  job     ResearchJob     @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  profile LinkedInProfile @relation(fields: [profileId], references: [id])
+
+  @@map("research_results")
+}

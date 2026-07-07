@@ -7,6 +7,7 @@ import { env } from "./config/env";
 import { errorHandler } from "./middleware/errorHandler";
 import { notFoundHandler } from "./middleware/notFound";
 import healthRouter from "./routes/health";
+import researchRouter from "./routes/research";
 
 export const app = express();
 
@@ -28,6 +29,7 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/api/v1", healthRouter);
+app.use("/api/v1/research", researchRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
